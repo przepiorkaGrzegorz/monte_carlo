@@ -20,13 +20,12 @@ int main() {
     const int N = 10E07;
     const float p_tab[] = {0.1, 0.5, 0.9};
     const int len_p = sizeof(p_tab)/sizeof(p_tab[0]);
-    int powers[] = {2, 3, 4, 5, 6, 7};
+    const int powers[] = {2, 3, 4, 5, 6, 7};
     const int pow_len = sizeof(powers)/sizeof(powers[0]);
     double expected_vals[len_p][pow_len] = {0.0};
     double expected_vals_sq[len_p][pow_len] = {0.0};
     double var[len_p][pow_len] = {0.0};
     double var_teo[len_p][pow_len] = {0.0};
-
     std::vector<std::vector<double>> vals(len_p, std::vector<double>(N, 0.0));
 
     for (int i = 0; i != len_p; ++i) {
@@ -51,43 +50,50 @@ int main() {
         }
     }
 
+    // for (int i = 0; i != len_p; ++i) {
+    //     for (int j = 0; j != pow_len; ++j) {
+    //         std::printf("%f, ", var_teo[i][j]);
+    //     }
+    //     std::printf("\n");
+    // }
+    // std::printf("\n");
 
-
-    for (int i = 0; i != len_p; ++i) {
-        for (int j = 0; j != pow_len; ++j) {
-            std::printf("%f, ", var_teo[i][j]);
-        }
-        std::printf("\n");
-    }
-    std::printf("\n");
-
-    for (int i = 0; i != len_p; ++i) {
-        for (int j = 0; j != pow_len; ++j) {
-            std::printf("%f, ", var[i][j]);
-        }
-        std::printf("\n");
-    }
-
+    // for (int i = 0; i != len_p; ++i) {
+    //     for (int j = 0; j != pow_len; ++j) {
+    //         std::printf("%f, ", var[i][j]);
+    //     }
+    //     std::printf("\n");
+    // }
 
     // Zapis do pliku
-    std::ofstream exp_file, var_file;
-    exp_file.open("exp_err.txt");
-    var_file.open("var_err.txt");
-
+    std::ofstream exp, varr, exp_err, var_err;
+    exp.open("exp.txt"); // wartość oczekiwana
+    varr.open("var.txt"); // wariancja
+    exp_err.open("exp_err.txt"); // błąd wartości oczekiwanej
+    var_err.open("var_err.txt"); // błąd wariancji
+    
     for (int j = 0; j != pow_len; ++j) {
-        exp_file<<pow(10, powers[j])<<" ";
-        var_file<<pow(10, powers[j])<<" ";
+        exp_err<<pow(10, powers[j])<<" ";
+        var_err<<pow(10, powers[j])<<" ";
+        exp<<pow(10, powers[j])<<" ";
+        varr<<pow(10, powers[j])<<" ";
         
         for (int i = 0; i != len_p; ++i) {
-            exp_file<<fabs(expected_vals[i][j] - p_tab[i])/p_tab[i]<<" ";
-            var_file<<fabs(var[i][j] - var_teo[i][j])/var_teo[i][j]<<" ";
+            exp_err<<fabs(expected_vals[i][j] - p_tab[i])/p_tab[i]<<" "; // n err
+            var_err<<fabs(var[i][j] - var_teo[i][j])/var_teo[i][j]<<" "; // n err
+            exp<<expected_vals[i][j]<<" "<<p_tab[i]<<" "; // n exp exp_teo
+            varr<<var[i][j]<<" "<<var_teo[i][j]<<" "; // n var var_teo
         }
-        exp_file<<"\n";
-        var_file<<"\n";
+        exp_err<<"\n";
+        var_err<<"\n";
+        exp<<"\n";
+        varr<<"\n";
     }
 
-    exp_file.close();
-    var_file.close();
+    exp.close();
+    varr.close();
+    exp_err.close();
+    var_err.close();
 
     return 0;
 }
