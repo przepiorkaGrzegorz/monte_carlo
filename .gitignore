@@ -52,3 +52,9 @@
 ### Txt and pdf files
 */*.txt
 */*.pdf
+
+### Pictures
+*/*.png
+*/*.jpg
+*/*/*.png
+*/*/*.jpg

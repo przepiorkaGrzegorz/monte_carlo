@@ -50,21 +50,6 @@ int main() {
         }
     }
 
-    // for (int i = 0; i != len_p; ++i) {
-    //     for (int j = 0; j != pow_len; ++j) {
-    //         std::printf("%f, ", var_teo[i][j]);
-    //     }
-    //     std::printf("\n");
-    // }
-    // std::printf("\n");
-
-    // for (int i = 0; i != len_p; ++i) {
-    //     for (int j = 0; j != pow_len; ++j) {
-    //         std::printf("%f, ", var[i][j]);
-    //     }
-    //     std::printf("\n");
-    // }
-
     // Zapis do pliku
     std::ofstream exp, varr, exp_err, var_err;
     exp.open("exp.txt"); // wartość oczekiwana
