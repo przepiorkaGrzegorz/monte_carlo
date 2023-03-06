@@ -50,6 +50,7 @@
 */!.vscode/*.code-snippets
 
 ### Txt and pdf files
+*.txt
 */*.txt
 */*.pdf
 
