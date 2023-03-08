@@ -8,7 +8,7 @@ double uniform() {
     return (rand()/(double)RAND_MAX);
 }
 
-double bernoulli(double p) {
+double bernoulli(const double p) {
     double u = uniform();
     if (u <= p) return 1;
     else return 0;
@@ -50,12 +50,12 @@ int main() {
         }
     }
 
-    // Zapis do pliku
+    // Save to file
     std::ofstream exp, varr, exp_err, var_err;
-    exp.open("exp.txt"); // wartość oczekiwana
-    varr.open("var.txt"); // wariancja
-    exp_err.open("exp_err.txt"); // błąd wartości oczekiwanej
-    var_err.open("var_err.txt"); // błąd wariancji
+    exp.open("exp.txt"); // expected value
+    varr.open("var.txt"); // variance
+    exp_err.open("exp_err.txt"); // relative error of expected value
+    var_err.open("var_err.txt"); // relative error of variance
     
     for (int j = 0; j != pow_len; ++j) {
         exp_err<<pow(10, powers[j])<<" ";
