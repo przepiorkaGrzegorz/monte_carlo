@@ -1,1 +1,1 @@
-## Materiały z kursy Metody Monte Carlo w Fizyce
+## Monte Carlo Methods in Physics course.
