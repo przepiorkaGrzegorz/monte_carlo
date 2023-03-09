@@ -60,3 +60,7 @@
 */*.jpg
 */*/*.png
 */*/*.jpg
+
+### Zip files
+*/*.zip
+*.zip
