@@ -8,7 +8,7 @@ norm = n/10E6
 #function used to map a value to the intervals
 hist(x,width)=width*floor(x/width)+width/2.0
 set term png #output terminal and file
-set output "histogram.png"
+set output "markovHist.png"
 set xrange [min:max]
 set yrange [0.8:]
 
@@ -26,5 +26,5 @@ set ylabel " - "
 f(x) = 0.8 * (1 + x - x**3)
 
 #count and plot
-plot "composite.txt" u (hist($1,width)):(1.0*norm) smooth freq w boxes lc rgb"green" notitle, \
+plot "markov.txt" u (hist($1,width)):(1.0*norm) smooth freq w boxes lc rgb"green" notitle, \
 f(x) with lines lt rgb 'red'
