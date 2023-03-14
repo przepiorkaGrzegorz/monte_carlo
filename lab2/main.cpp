@@ -3,6 +3,7 @@
 #include<vector>
 #include<fstream>
 #include<string>
+#include<chrono>  // for high_resolution_clock (mierzenie czasu)
 
 
 double uniform() {
@@ -44,7 +45,7 @@ void markovChain(std::vector<double>& vec, const int N, const double delta) {
         tmp = vec[i] + (2*U1 - 1) * delta;
         pAcc = std::min(1.0, fX(tmp) / fX(vec[i]));
 
-        if ((tmp > 0.0 && tmp < 1.0) && uniform() <= pAcc) vec[i+1] = tmp;
+        if (tmp > 0.0 && tmp < 1.0 && uniform() <= pAcc) vec[i+1] = tmp;
         else vec[i+1] = vec[i];
     }
 }
@@ -68,9 +69,7 @@ void saveToFile(const std::vector<double>& vec, const std::string filePath) {
     std::ofstream file;
     file.open(filePath);
 
-    for (auto &v: vec) {
-        file << " " << v << "\n";
-    }
+    for (auto &v: vec) file << " " << v << "\n";
     file.close();
 }
 
@@ -79,56 +78,54 @@ void printn(const std::vector<double>& vec, const int n) {
     printf("\n");
 }
 
-void binVals(const std::vector<double>& vec, int* bins, const double width, const int k) {
+void binVals(const std::vector<double>& vec, int* bins, const int k, const double width) {
     double binSize = width / k;
-    
-    for(auto &v: vec) {
-        bins[(int)(v/binSize)]++;
-    }
+    for(auto &v: vec) bins[(int)(v/binSize)]++;
+}   
+
+void getBinsProb(double* tab, const int k, const double width) {
+    double binSize = width / k;
+    for (int i = 0; i != k; ++i) tab[i] = FX(binSize*(i + 1.0)) - FX(binSize*i);
 }
 
-void getBinsProb(double* tab, const int k) {
-    for (int i = 0; i != k; ++i) {
-        tab[i] = FX(0.1*(i + 1.0)) - FX(0.1*i);
-    }
-}
-
-void chi2(const std::vector<double>& vec, const int N, const int k) {
+double chi2(const std::vector<double>& vec, const int N, const int k) {
     int bins[k]{};
     double binsProb[k]{}, chiSqVal = 0.0;
-    binVals(vec, bins, 1.0, k);
-    getBinsProb(binsProb, k);
+    binVals(vec, bins, k, 1.0);
+    getBinsProb(binsProb, k, 1.0);
 
     for (int i = 0; i != k; ++i) {
-        printf("%f \n", binsProb[i]);
+        chiSqVal += pow((bins[i] - binsProb[i] * N), 2) / (binsProb[i] * N);
     }
 
-    for (int i = 0; i != k; ++i) {
-        chiSqVal += pow((bins[i] - binsProb[i] * N), 2) / 
-                    (binsProb[i] * N);
-    }
-
-    printf("\n");
-    printf("%f \n", sqrt(chiSqVal));
+    return chiSqVal;
 }
 
 
 int main() {
+    auto start = std::chrono::high_resolution_clock::now();
+    srand((unsigned)time(NULL));
     const int N = 1E06, k = 10;
-    const double alpha = 0.05; 
     std::vector<double> fVec(N, 0.0), compVec(N, 0.0), markovVec(N, 0.0), rejectVec(N, 0.0);
 
-    probDensity(fVec, N, 1.0);
+    printf("\n");
+    // probDensity(fVec, N, 1.0);
     // saveToFile(fVec, "fX.txt");
-    // composite(compVec);
-    // saveToFile(compVec, "composite.txt");
-    // markovChain(markovVec, N, 0.05); // 0.5, 0.05
-    // saveToFile(markovVec, "markov.txt");
+
+    composite(compVec);
+    printf("[Composite] Chi2 value: %f\n", chi2(compVec, N, k));
+    saveToFile(compVec, "composite.txt");
+
+    markovChain(markovVec, N, 0.05); // 0.5, 0.05
+    printf("[Markov Chain] Chi2 value: %f\n", chi2(markovVec, N, k));
+    saveToFile(markovVec, "markov.txt");
+
     rejection(rejectVec);
     saveToFile(rejectVec, "reject.txt");
+    printf("[Rejection] Chi2 value: %f\n", chi2(rejectVec, N, k));
 
-    chi2(rejectVec, N, k);
-
-    printf("OK\n");
+    auto finish = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed = finish - start;
+    printf("\nExecution time: %f [s], (%f [min])\n", elapsed.count(), elapsed.count()/60.0);
     return 0;
 }
